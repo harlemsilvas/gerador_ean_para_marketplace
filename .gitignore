@@ -1,0 +1,21 @@
+# Ambiente virtual Python
+.venv/
+venv/
+
+# Arquivos de ambiente
+.env
+.env.*
+
+# Arquivos de saída e dados
+*.json
+*.txt
+!README.md
+
+# Arquivos do sistema
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+
+# Outros
+*.log
