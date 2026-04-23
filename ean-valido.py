@@ -1,4 +1,16 @@
 wquant = 20 # define a quantidade de códigos a serem gerados no lote
+# =============================================================
+# Projeto: Gerador e Validador de Códigos EAN-13
+# Autor: HDevSoluções - Transformando ideias em soluções digitais
+# Desenvolvedor especializado em criar experiências digitais incríveis e funcionais
+# Contato: contato@hdevsolucoes.tech | (11) 96774-5351 | São Paulo - SP
+# Site: https://hdevsolucoes.tech/
+# GitHub: https://github.com/hdevsolucoes
+# Instagram: https://www.instagram.com/hdevsolucoes/
+# X: https://x.com/hdevsolucoes
+# LinkedIn: https://www.linkedin.com/in/harlem-afonso-claumann-silva-bb5160356/
+# =============================================================
+wquant = 20 # define a quantidade de códigos a serem gerados no lote
 import json
 import os
 from datetime import datetime
@@ -10,9 +22,22 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Variáveis configuráveis
-wquant = int(os.getenv('WQUANT', 20))
-prefixo_empresa_env = os.getenv('PREFIXO_EMPRESA', '1933')
-arquivo_json_env = os.getenv('ARQUIVO_JSON', 'ean_validos.json')
+def get_env_int(var, default):
+    try:
+        val = os.getenv(var)
+        return int(val) if val and val.isdigit() else default
+    except Exception:
+        return default
+
+def get_env_str(var, default):
+    val = os.getenv(var)
+    return val if val else default
+
+# Padrões se não houver .env ou variáveis ausentes
+quantidade_a_gerar = get_env_int('QUANTIDADE_A_GERAR', 5)
+prefixo_empresa_env = get_env_str('PREFIXO_EMPRESA', '9999')
+arquivo_json_env = get_env_str('ARQUIVO_JSON', 'ean_validos.json')
+caminho_saida_txt_env = get_env_str('CAMINHO_SAIDA_TXT', 'ean_lista.txt')
 
 class GeradorEAN13:
     """
@@ -251,7 +276,7 @@ class GeradorEAN13:
             'arquivo': self.arquivo_json,
             'prefixo': f"{self.prefixo_brasil}{self.prefixo_empresa}",
             'ultima_geracao': self.codigos_gerados[-1]['data_geracao'] if self.codigos_gerados else None,
-            'todos_validos_local': all(c['valido_local'] for c in self.codigos_gerados)
+            'todos_val            pip install python-dotenvcal': all(c['valido_local'] for c in self.codigos_gerados)
         }
     
     def exportar_lista_simples(self, arquivo_saida: str = "ean_lista.txt"):
@@ -270,7 +295,7 @@ if __name__ == "__main__":
     print("🏷️  SISTEMA DE GERAÇÃO EAN-13 - PADRÃO BRASIL")
     print("=" * 60)
 
-    # Inicializa o gerador com variáveis do .env
+    # Inicializa o gerador com variáveis do .env ou padrões
     gerador = GeradorEAN13(arquivo_json=arquivo_json_env, prefixo_empresa=prefixo_empresa_env)
 
     # 1. Gerar um único código
@@ -279,9 +304,9 @@ if __name__ == "__main__":
     print(f"   Código: {codigo['codigo']}")
     print(f"   Válido (local): {codigo['valido_local']}")
 
-    # 2. Gerar lote de códigos conforme wquant
-    print(f"\n2️⃣  Gerando lote de {wquant} códigos:")
-    lote = gerador.gerar_lote(quantidade=wquant, validar_api=False, intervalo=0.5)
+    # 2. Gerar lote de códigos conforme quantidade_a_gerar
+    print(f"\n2️⃣  Gerando lote de {quantidade_a_gerar} códigos:")
+    lote = gerador.gerar_lote(quantidade=quantidade_a_gerar, validar_api=False, intervalo=0.5)
 
     # 3. Validar um código específico via API
     print("\n3️⃣  Validando código via API pública:")
@@ -300,8 +325,8 @@ if __name__ == "__main__":
         print(f"   {chave}: {valor}")
 
     # 5. Exportar lista simples
-    print("\n5️⃣  Exportando lista para arquivo texto:")
-    gerador.exportar_lista_simples("ean_lista.txt")
+    print(f"\n5️⃣  Exportando lista para arquivo texto:")
+    gerador.exportar_lista_simples(caminho_saida_txt_env)
 
     print("\n" + "=" * 60)
     print(f"✅ Processo concluído! Verifique o arquivo {arquivo_json_env}")
